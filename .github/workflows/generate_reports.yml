@@ -62,4 +62,5 @@ jobs:
           git config user.name "GitHub Streak AI"
           git config user.email "streak-ai[bot]@users.noreply.github.com"
           git commit -m "📊 Auto-update reports and dashboard [skip ci]"
-          git push
+          git push origin HEAD:master
+
