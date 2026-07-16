@@ -1,0 +1,65 @@
+name: Generate Reports & Dashboard
+
+on:
+  push:
+    paths:
+      - "logs/**"
+    branches:
+      - main
+  workflow_dispatch: # Allow manual trigger
+
+permissions:
+  contents: write
+
+env:
+  NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+
+jobs:
+  generate-reports:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Full history for git stats
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Generate weekly report
+        run: python cli.py weekly
+        continue-on-error: true
+
+      - name: Generate monthly report
+        run: python cli.py monthly
+        continue-on-error: true
+
+      - name: Update README dashboard
+        run: python cli.py dashboard
+        continue-on-error: true
+
+      - name: Check for changes
+        id: changes
+        run: |
+          git add -A
+          if git diff --cached --quiet; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            echo "ℹ️ No content changes detected. Skipping commit."
+          else
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+            echo "✅ Changes detected. Will commit."
+            git diff --cached --stat
+          fi
+
+      - name: Commit and push if changed
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          git config user.name "GitHub Streak AI"
+          git config user.email "streak-ai[bot]@users.noreply.github.com"
+          git commit -m "📊 Auto-update reports and dashboard [skip ci]"
+          git push

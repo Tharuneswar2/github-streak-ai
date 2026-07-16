@@ -1,0 +1,87 @@
+name: Auto Streak — Daily Commits
+
+on:
+  schedule:
+    # 12 runs per day, every 2 hours = 7-15 commits/day
+    # Each run generates 1-2 unique content commits
+    - cron: "10 0 * * *"    # 00:10 UTC — Daily log + streak log
+    - cron: "10 2 * * *"    # 02:10 UTC — Tech tip
+    - cron: "10 4 * * *"    # 04:10 UTC — Quote
+    - cron: "10 6 * * *"    # 06:10 UTC — Code snippet
+    - cron: "10 8 * * *"    # 08:10 UTC — Learning note + progress
+    - cron: "10 10 * * *"   # 10:10 UTC — Tech tip + quote
+    - cron: "10 12 * * *"   # 12:10 UTC — Code snippet + learning
+    - cron: "10 14 * * *"   # 14:10 UTC — Reflection + progress
+    - cron: "10 16 * * *"   # 16:10 UTC — Tech tip + streak log
+    - cron: "10 18 * * *"   # 18:10 UTC — Quote + code snippet
+    - cron: "10 20 * * *"   # 20:10 UTC — Learning note + progress
+    - cron: "10 22 * * *"   # 22:10 UTC — Reflection + streak log
+  workflow_dispatch: # Manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  generate-content:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Get current UTC hour
+        id: hour
+        run: echo "hour=$(date -u +%H)" >> "$GITHUB_OUTPUT"
+
+      - name: Generate content for this time slot
+        run: python scripts/content_generator.py ${{ steps.hour.outputs.hour }}
+
+      - name: Determine commit message
+        id: msg
+        run: |
+          HOUR=${{ steps.hour.outputs.hour }}
+          DAY=$(date +%A)
+          DATE=$(date +%Y-%m-%d)
+          
+          case $HOUR in
+            00|01) MSG="📝 Daily log: ${DATE}" ;;
+            02|03) MSG="💡 Tech tip of the day" ;;
+            04|05) MSG="💬 Daily motivation" ;;
+            06|07) MSG="💻 Code snippet: ${DAY}" ;;
+            08|09) MSG="📚 Learning notes: ${DATE}" ;;
+            10|11) MSG="💡 Midday knowledge drop" ;;
+            12|13) MSG="💻 Afternoon code & learn" ;;
+            14|15) MSG="🌙 Progress update: ${DAY}" ;;
+            16|17) MSG="💡 Evening tech tip" ;;
+            18|19) MSG="💬 Evening inspiration" ;;
+            20|21) MSG="📚 Night study session" ;;
+            22|23) MSG="🌙 Daily reflection: ${DATE}" ;;
+            *) MSG="🔥 Streak update: ${DATE}" ;;
+          esac
+
+          echo "message=${MSG}" >> "$GITHUB_OUTPUT"
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "GitHub Streak AI"
+          git config user.email "streak-ai[bot]@users.noreply.github.com"
+          
+          git add -A
+          
+          if git diff --cached --quiet; then
+            echo "ℹ️ No changes to commit."
+            exit 0
+          fi
+          
+          git commit -m "${{ steps.msg.outputs.message }}"
+          git push

@@ -1,0 +1,87 @@
+<div align="center">
+
+# 🚀 GitHub Streak AI
+
+*AI-powered daily logging & streak management for meaningful GitHub contributions*
+
+{{ badges }}
+
+</div>
+
+---
+
+## 📊 Dashboard
+
+| Metric | Value |
+|--------|-------|
+| 🔥 Current Streak | **{{ current_streak }} days** |
+| 🏆 Longest Streak | **{{ longest_streak }} days** |
+| 📝 Total Logs | **{{ total_logs }}** |
+| ⏱️ Study Hours | **{{ estimated_hours }}h** |
+| 🎯 Status | {{ streak_status }} |
+| 📅 Today Logged | {{ "✅ Yes" if today_logged else "❌ Not yet" }} |
+
+---
+
+## 📈 Progress
+
+**Yearly Logging Progress:**
+
+```
+{{ yearly_progress }}
+```
+
+**Streak Progress:**
+
+```
+{{ streak_progress }}
+```
+
+---
+
+{% if technologies %}
+## 🛠️ Technologies
+
+{% for tech in technologies %}
+`{{ tech }}` {% endfor %}
+
+---
+
+{% endif %}
+
+{% if recent_activity %}
+## 🕐 Recent Activity
+
+| Date | Day |
+|------|-----|
+{% for activity in recent_activity %}
+| {{ activity.display_date }} | {{ activity.day }} |
+{% endfor %}
+
+---
+
+{% endif %}
+
+## 🚀 Quick Start
+
+```bash
+# Create today's log
+python cli.py new
+
+# Generate AI summary
+python cli.py summary
+
+# View statistics
+python cli.py stats
+
+# Generate weekly report
+python cli.py weekly
+
+# Update this dashboard
+python cli.py dashboard
+```
+
+---
+
+*Last updated: {{ generated_date }}*
+*Powered by [GitHub Streak AI](https://github.com/yourusername/github-streak-ai)*
