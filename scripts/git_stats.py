@@ -66,7 +66,9 @@ class GitStatsCollector:
             repo = git.Repo(str(self._repo_path), search_parent_directories=True)
             return repo
         except ImportError:
-            raise GitStatsError("GitPython is required. Install: pip install gitpython")
+            raise GitStatsError(
+                "GitPython is required. Install: pip install gitpython"
+            ) from None
         except Exception as exc:
             raise RepositoryNotFoundError(
                 f"No git repository found at {self._repo_path}. Run: git init"
@@ -97,7 +99,10 @@ class GitStatsCollector:
                 full = Path(self._repo.working_dir) / fp
                 if full.suffix.lower() in text_ext and full.exists():
                     try:
-                        total_loc += len(full.read_text(encoding="utf-8", errors="ignore").splitlines())
+                        text = full.read_text(
+                            encoding="utf-8", errors="ignore"
+                        )
+                        total_loc += len(text.splitlines())
                     except OSError:
                         continue
         except Exception as exc:

@@ -6,11 +6,10 @@ and pre-populated log structures for test isolation.
 
 from __future__ import annotations
 
-import os
 from datetime import date, timedelta
 from pathlib import Path
-from typing import Any, Generator
-from unittest.mock import MagicMock, patch
+from typing import Any
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -75,7 +74,12 @@ def mock_ai_response() -> dict[str, Any]:
                 "index": 0,
                 "message": {
                     "role": "assistant",
-                    "content": "## AI Summary\n\nThis is a test summary.\n\n- Key takeaway 1\n- Key takeaway 2\n\n### Action Items\n- Follow up on testing",
+                    "content": (
+                        "## AI Summary\n\n"
+                        "This is a test summary.\n\n"
+                        "- Key takeaway 1\n- Key takeaway 2\n\n"
+                        "### Action Items\n- Follow up on testing"
+                    ),
                 },
                 "finish_reason": "stop",
             }

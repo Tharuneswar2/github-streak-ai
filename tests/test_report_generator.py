@@ -3,11 +3,7 @@
 from __future__ import annotations
 
 from datetime import date
-from pathlib import Path
-from typing import Any
-from unittest.mock import MagicMock, patch
-
-import pytest
+from unittest.mock import MagicMock
 
 from config.settings import Settings
 from scripts.ai_client import AIResponse, NvidiaAIClient

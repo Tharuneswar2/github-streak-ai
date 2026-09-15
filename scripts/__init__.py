@@ -9,15 +9,15 @@ Contains core business logic modules:
 """
 
 from scripts.ai_client import NvidiaAIClient
+from scripts.git_stats import GitStatsCollector
 from scripts.log_manager import LogManager
 from scripts.report_generator import ReportGenerator
-from scripts.git_stats import GitStatsCollector
 from scripts.streak_tracker import StreakTracker
 
 __all__ = [
-    "NvidiaAIClient",
-    "LogManager",
-    "ReportGenerator",
     "GitStatsCollector",
+    "LogManager",
+    "NvidiaAIClient",
+    "ReportGenerator",
     "StreakTracker",
 ]

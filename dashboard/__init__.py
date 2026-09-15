@@ -1,6 +1,6 @@
 """Dashboard package for README generation."""
 
-from dashboard.generator import DashboardGenerator
 from dashboard.badges import BadgeGenerator
+from dashboard.generator import DashboardGenerator
 
-__all__ = ["DashboardGenerator", "BadgeGenerator"]
+__all__ = ["BadgeGenerator", "DashboardGenerator"]

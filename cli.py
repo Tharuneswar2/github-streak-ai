@@ -16,22 +16,17 @@ Usage:
 from __future__ import annotations
 
 import logging
-import sys
 from datetime import date, datetime
-from pathlib import Path
-from typing import Optional
 
 import typer
-from rich import print as rprint
 from rich.console import Console
 from rich.logging import RichHandler
 from rich.markdown import Markdown
 from rich.panel import Panel
 from rich.table import Table
-from rich.text import Text
 
-from config.settings import get_settings, Settings
 from config.constants import DATE_FORMAT
+from config.settings import Settings, get_settings
 
 # ── Logging Setup ────────────────────────────────────────────
 logging.basicConfig(
@@ -66,13 +61,13 @@ def _get_settings() -> Settings:
                 border_style="red",
             )
         )
-        raise typer.Exit(1)
+        raise typer.Exit(1) from exc
 
 
 # ── NEW Command ──────────────────────────────────────────────
 @app.command()
 def new(
-    date_str: Optional[str] = typer.Argument(
+    date_str: str | None = typer.Argument(
         None,
         help="Date for the log (YYYY-MM-DD). Defaults to today.",
     ),
@@ -94,7 +89,7 @@ def new(
             target_date = datetime.strptime(date_str, DATE_FORMAT).date()
         except ValueError:
             console.print(f"[red]Invalid date format: {date_str}. Use YYYY-MM-DD.[/]")
-            raise typer.Exit(1)
+            raise typer.Exit(1) from None
     else:
         target_date = date.today()
 
@@ -127,7 +122,7 @@ def new(
 # ── SUMMARY Command ─────────────────────────────────────────
 @app.command()
 def summary(
-    date_str: Optional[str] = typer.Argument(
+    date_str: str | None = typer.Argument(
         None,
         help="Date of the log to summarize (YYYY-MM-DD). Defaults to today.",
     ),
@@ -149,7 +144,7 @@ def summary(
             target_date = datetime.strptime(date_str, DATE_FORMAT).date()
         except ValueError:
             console.print(f"[red]Invalid date format: {date_str}. Use YYYY-MM-DD.[/]")
-            raise typer.Exit(1)
+            raise typer.Exit(1) from None
     else:
         target_date = date.today()
 
@@ -165,7 +160,7 @@ def summary(
                 border_style="red",
             )
         )
-        raise typer.Exit(1)
+        raise typer.Exit(1) from None
 
     if not settings.has_api_key:
         console.print(
@@ -192,7 +187,7 @@ def summary(
                     border_style="red",
                 )
             )
-            raise typer.Exit(1)
+            raise typer.Exit(1) from exc
 
     # Update the log
     try:
@@ -217,10 +212,10 @@ def summary(
 # ── WEEKLY Command ───────────────────────────────────────────
 @app.command()
 def weekly(
-    week: Optional[int] = typer.Option(
+    week: int | None = typer.Option(
         None, "--week", "-w", help="ISO week number (1-53). Defaults to current week."
     ),
-    year: Optional[int] = typer.Option(
+    year: int | None = typer.Option(
         None, "--year", "-y", help="Year. Defaults to current year."
     ),
 ) -> None:
@@ -242,9 +237,13 @@ def weekly(
             )
         except Exception as exc:
             console.print(
-                Panel(f"[red]Report generation failed:[/]\n{exc}", title="❌ Error", border_style="red")
+                Panel(
+                    f"[red]Report generation failed:[/]\n{exc}",
+                    title="❌ Error",
+                    border_style="red",
+                )
             )
-            raise typer.Exit(1)
+            raise typer.Exit(1) from exc
 
     console.print(
         Panel(
@@ -258,10 +257,10 @@ def weekly(
 # ── MONTHLY Command ─────────────────────────────────────────
 @app.command()
 def monthly(
-    month: Optional[int] = typer.Option(
+    month: int | None = typer.Option(
         None, "--month", "-m", help="Month (1-12). Defaults to current month."
     ),
-    year: Optional[int] = typer.Option(
+    year: int | None = typer.Option(
         None, "--year", "-y", help="Year. Defaults to current year."
     ),
 ) -> None:
@@ -281,9 +280,13 @@ def monthly(
             report_path = generator.generate_monthly_report(year=year, month=month)
         except Exception as exc:
             console.print(
-                Panel(f"[red]Report generation failed:[/]\n{exc}", title="❌ Error", border_style="red")
+                Panel(
+                    f"[red]Report generation failed:[/]\n{exc}",
+                    title="❌ Error",
+                    border_style="red",
+                )
             )
-            raise typer.Exit(1)
+            raise typer.Exit(1) from exc
 
     console.print(
         Panel(
@@ -379,9 +382,13 @@ def dashboard() -> None:
             output_path = generator.generate()
         except Exception as exc:
             console.print(
-                Panel(f"[red]Dashboard generation failed:[/]\n{exc}", title="❌ Error", border_style="red")
+                Panel(
+                    f"[red]Dashboard generation failed:[/]\n{exc}",
+                    title="❌ Error",
+                    border_style="red",
+                )
             )
-            raise typer.Exit(1)
+            raise typer.Exit(1) from exc
 
     console.print(
         Panel(

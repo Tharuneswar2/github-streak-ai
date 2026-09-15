@@ -42,18 +42,18 @@ class StreakTracker:
         """Scan the logs directory for all dates with log files.
 
         Returns:
-            Sorted list of dates.
+            Sorted list of unique dates.
         """
         from datetime import datetime as dt
 
-        dates: list[date] = []
+        dates: set[date] = set()
         if not self._logs_dir.exists():
-            return dates
+            return []
 
         for md_file in self._logs_dir.rglob("*.md"):
             try:
                 parsed = dt.strptime(md_file.stem, "%Y-%m-%d").date()
-                dates.append(parsed)
+                dates.add(parsed)
             except ValueError:
                 continue
         return sorted(dates)
@@ -162,7 +162,9 @@ class StreakTracker:
             "last_log": log_dates[-1].isoformat() if log_dates else None,
         }
 
-    def get_activity_calendar(self, year: int | None = None, month: int | None = None) -> dict[str, bool]:
+    def get_activity_calendar(
+        self, year: int | None = None, month: int | None = None
+    ) -> dict[str, bool]:
         """Generate an activity calendar showing which days have logs.
 
         Args:

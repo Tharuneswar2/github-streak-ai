@@ -5,8 +5,6 @@ from __future__ import annotations
 from datetime import date
 from pathlib import Path
 
-import pytest
-
 from config.settings import Settings
 from dashboard.badges import BadgeGenerator
 from dashboard.generator import DashboardGenerator

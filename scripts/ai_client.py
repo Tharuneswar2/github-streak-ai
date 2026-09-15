@@ -126,8 +126,14 @@ class NvidiaAIClient:
         payload: dict[str, Any] = {
             "model": self._settings.model,
             "messages": messages,
-            "temperature": temperature if temperature is not None else self._settings.ai_temperature,
-            "max_tokens": max_tokens if max_tokens is not None else self._settings.max_tokens,
+            "temperature": (
+                temperature
+                if temperature is not None
+                else self._settings.ai_temperature
+            ),
+            "max_tokens": (
+                max_tokens if max_tokens is not None else self._settings.max_tokens
+            ),
         }
 
         last_error: Exception | None = None

@@ -5,8 +5,6 @@ from __future__ import annotations
 from datetime import date, timedelta
 from pathlib import Path
 
-import pytest
-
 from config.constants import STREAK_ACTIVE, STREAK_AT_RISK, STREAK_BROKEN
 from config.settings import Settings
 from scripts.streak_tracker import StreakTracker

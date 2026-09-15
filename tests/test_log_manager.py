@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-from datetime import date, timedelta
-from pathlib import Path
+from datetime import date
 
 import pytest
 
 from config.settings import Settings
-from scripts.log_manager import LogManager, LogNotFoundError, LogCorruptedError
+from scripts.log_manager import LogManager, LogNotFoundError
 
 
 class TestLogCreation:
@@ -118,7 +117,7 @@ class TestLogListing:
         end = populated_logs[2]
         results = manager.get_logs_for_range(start, end)
         assert len(results) >= 1
-        for d, content in results:
+        for d, _content in results:
             assert start <= d <= end
 
     def test_get_total_log_count(

@@ -5,7 +5,7 @@ on:
     paths:
       - "logs/**"
     branches:
-      - main
+      - master
   workflow_dispatch: # Allow manual trigger
 
 permissions:

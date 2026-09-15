@@ -11,7 +11,7 @@ import hashlib
 import json
 import logging
 import random
-from datetime import date, datetime
+from datetime import UTC, date, datetime
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -19,36 +19,126 @@ logger = logging.getLogger(__name__)
 # ── Curated Content Pools ────────────────────────────────────
 
 TECH_TIPS = [
-    ("Python", "Use `functools.lru_cache` to memoize expensive function calls and improve performance."),
-    ("Git", "Use `git stash` to temporarily save uncommitted changes when switching branches."),
-    ("Docker", "Use multi-stage builds to reduce final image size by separating build and runtime dependencies."),
-    ("Linux", "Use `xargs` with `find` for efficient batch operations: `find . -name '*.py' | xargs grep 'TODO'`."),
-    ("Python", "Use `dataclasses` with `__slots__=True` for memory-efficient data containers in Python 3.10+."),
-    ("Git", "Use `git bisect` to binary-search for the commit that introduced a bug."),
-    ("Security", "Never store secrets in code. Use environment variables or secret managers like HashiCorp Vault."),
-    ("Python", "Use `pathlib.Path` instead of `os.path` for cleaner, more readable file system operations."),
-    ("DevOps", "Implement health checks in your containers with `HEALTHCHECK` in Dockerfile."),
-    ("Python", "Use `typing.Protocol` for structural subtyping — duck typing with type safety."),
-    ("Git", "Use `git log --oneline --graph --all` for a visual branch history in the terminal."),
-    ("Python", "Use `contextlib.suppress(Exception)` instead of empty try/except blocks."),
-    ("Testing", "Follow the AAA pattern: Arrange, Act, Assert — for clean, readable test cases."),
-    ("Docker", "Use `.dockerignore` to exclude unnecessary files and speed up builds."),
-    ("Python", "Use `collections.Counter` for frequency counting instead of manual dictionary loops."),
-    ("Linux", "Use `tmux` or `screen` for persistent terminal sessions on remote servers."),
-    ("Python", "Use `itertools.chain.from_iterable()` to flatten nested iterables efficiently."),
-    ("Git", "Set up `git aliases` in `~/.gitconfig` for frequently used commands."),
-    ("Python", "Use `enum.Enum` for type-safe constants instead of magic strings or numbers."),
-    ("DevOps", "Use `act` to test GitHub Actions workflows locally before pushing."),
-    ("Python", "Use `__all__` in `__init__.py` to control public API exports."),
-    ("Security", "Always validate and sanitize user input — never trust client-side data."),
-    ("Python", "Use `functools.partial` to create specialized versions of functions."),
-    ("Testing", "Use `pytest.mark.parametrize` to run the same test with different inputs."),
-    ("Linux", "Use `htop` instead of `top` for a more interactive process monitoring experience."),
-    ("Python", "Use f-strings with `=` for debugging: `f'{variable=}'` prints both name and value."),
-    ("Git", "Use `git reflog` to recover lost commits or undo a bad rebase."),
-    ("Docker", "Pin specific image versions in Dockerfiles instead of using `latest` tag."),
-    ("Python", "Use `textwrap.dedent()` for clean multi-line strings in code."),
-    ("DevOps", "Use semantic versioning (SemVer) for all releases: MAJOR.MINOR.PATCH."),
+    (
+        "Python",
+        "Use `functools.lru_cache` to memoize expensive function calls.",
+    ),
+    (
+        "Git",
+        "Use `git stash` to temporarily save uncommitted changes.",
+    ),
+    (
+        "Docker",
+        "Use multi-stage builds to reduce final image size.",
+    ),
+    (
+        "Linux",
+        "Use `xargs` with `find` for efficient batch operations.",
+    ),
+    (
+        "Python",
+        "Use `dataclasses` with `__slots__=True` for memory efficiency.",
+    ),
+    (
+        "Git",
+        "Use `git bisect` to binary-search for the commit that introduced a bug.",
+    ),
+    (
+        "Security",
+        "Never store secrets in code. Use environment variables.",
+    ),
+    (
+        "Python",
+        "Use `pathlib.Path` instead of `os.path` for file operations.",
+    ),
+    (
+        "DevOps",
+        "Implement health checks in containers with `HEALTHCHECK`.",
+    ),
+    (
+        "Python",
+        "Use `typing.Protocol` for structural subtyping with type safety.",
+    ),
+    (
+        "Git",
+        "Use `git log --oneline --graph --all` for visual branch history.",
+    ),
+    (
+        "Python",
+        "Use `contextlib.suppress(Exception)` instead of empty try/except.",
+    ),
+    (
+        "Testing",
+        "Follow the AAA pattern: Arrange, Act, Assert for clean tests.",
+    ),
+    (
+        "Docker",
+        "Use `.dockerignore` to exclude unnecessary files.",
+    ),
+    (
+        "Python",
+        "Use `collections.Counter` for frequency counting.",
+    ),
+    (
+        "Linux",
+        "Use `tmux` or `screen` for persistent terminal sessions.",
+    ),
+    (
+        "Python",
+        "Use `itertools.chain.from_iterable()` to flatten iterables.",
+    ),
+    (
+        "Git",
+        "Set up `git aliases` in `~/.gitconfig` for frequent commands.",
+    ),
+    (
+        "Python",
+        "Use `enum.Enum` for type-safe constants instead of magic strings.",
+    ),
+    (
+        "DevOps",
+        "Use `act` to test GitHub Actions workflows locally.",
+    ),
+    (
+        "Python",
+        "Use `__all__` in `__init__.py` to control public API exports.",
+    ),
+    (
+        "Security",
+        "Always validate and sanitize user input.",
+    ),
+    (
+        "Python",
+        "Use `functools.partial` to create specialized functions.",
+    ),
+    (
+        "Testing",
+        "Use `pytest.mark.parametrize` for different test inputs.",
+    ),
+    (
+        "Linux",
+        "Use `htop` instead of `top` for interactive process monitoring.",
+    ),
+    (
+        "Python",
+        "Use f-strings with `=` for debugging: `f'{variable=}'`.",
+    ),
+    (
+        "Git",
+        "Use `git reflog` to recover lost commits or undo a bad rebase.",
+    ),
+    (
+        "Docker",
+        "Pin specific image versions instead of using `latest` tag.",
+    ),
+    (
+        "Python",
+        "Use `textwrap.dedent()` for clean multi-line strings.",
+    ),
+    (
+        "DevOps",
+        "Use semantic versioning (SemVer) for all releases.",
+    ),
 ]
 
 QUOTES = [
@@ -61,25 +151,73 @@ QUOTES = [
     ("Make it work, make it right, make it fast.", "Kent Beck"),
     ("Programs must be written for people to read.", "Hal Abelson"),
     ("Talk is cheap. Show me the code.", "Linus Torvalds"),
-    ("Perfection is achieved when there is nothing left to take away.", "Antoine de Saint-Exupéry"),
-    ("The only way to learn a new programming language is by writing programs in it.", "Dennis Ritchie"),
-    ("Debugging is twice as hard as writing the code in the first place.", "Brian Kernighan"),
-    ("The most disastrous thing you can ever learn is your first programming language.", "Alan Kay"),
-    ("Software is a great combination of artistry and engineering.", "Bill Gates"),
-    ("In theory, there is no difference between theory and practice. In practice, there is.", "Jan L.A. van de Snepscheut"),
-    ("Clean code always looks like it was written by someone who cares.", "Robert C. Martin"),
-    ("Every great developer you know got there by solving problems they were unqualified to solve.", "Patrick McKenzie"),
-    ("The function of good software is to make the complex appear to be simple.", "Grady Booch"),
-    ("Measuring programming progress by lines of code is like measuring aircraft building progress by weight.", "Bill Gates"),
-    ("Before software can be reusable it first has to be usable.", "Ralph Johnson"),
-    ("A language that doesn't affect the way you think about programming is not worth knowing.", "Alan Perlis"),
-    ("The computer was born to solve problems that did not exist before.", "Bill Gates"),
-    ("One of my most productive days was throwing away 1,000 lines of code.", "Ken Thompson"),
+    (
+        "Perfection is achieved when there is nothing left to take away.",
+        "Antoine de Saint-Exupéry",
+    ),
+    (
+        "The only way to learn a new programming language is by writing programs.",
+        "Dennis Ritchie",
+    ),
+    (
+        "Debugging is twice as hard as writing the code in the first place.",
+        "Brian Kernighan",
+    ),
+    (
+        "The most disastrous thing you can ever learn is your first language.",
+        "Alan Kay",
+    ),
+    (
+        "Software is a great combination of artistry and engineering.",
+        "Bill Gates",
+    ),
+    (
+        "In theory, there is no difference between theory and practice.",
+        "Jan L.A. van de Snepscheut",
+    ),
+    (
+        "Clean code always looks like it was written by someone who cares.",
+        "Robert C. Martin",
+    ),
+    (
+        "Every great developer you know got there by solving problems.",
+        "Patrick McKenzie",
+    ),
+    (
+        "The function of good software is to make the complex appear simple.",
+        "Grady Booch",
+    ),
+    (
+        "Measuring programming progress by lines of code is like measuring aircraft by weight.",
+        "Bill Gates",
+    ),
+    (
+        "Before software can be reusable it first has to be usable.",
+        "Ralph Johnson",
+    ),
+    (
+        "A language that doesn't affect the way you think is not worth knowing.",
+        "Alan Perlis",
+    ),
+    (
+        "The computer was born to solve problems that did not exist before.",
+        "Bill Gates",
+    ),
+    (
+        "One of my most productive days was throwing away 1,000 lines of code.",
+        "Ken Thompson",
+    ),
     ("Experience is the name everyone gives to their mistakes.", "Oscar Wilde"),
     ("It's not a bug — it's an undocumented feature.", "Anonymous"),
-    ("The best time to plant a tree was 20 years ago. The second best time is now.", "Chinese Proverb"),
+    (
+        "The best time to plant a tree was 20 years ago.",
+        "Chinese Proverb",
+    ),
     ("Learning never exhausts the mind.", "Leonardo da Vinci"),
-    ("Small daily improvements over time lead to stunning results.", "Robin Sharma"),
+    (
+        "Small daily improvements over time lead to stunning results.",
+        "Robin Sharma",
+    ),
     ("Don't comment bad code — rewrite it.", "Brian Kernighan"),
     ("Weeks of coding can save you hours of planning.", "Anonymous"),
 ]
@@ -188,20 +326,20 @@ async def batch_process(
 
 LEARNING_TOPICS = [
     "Design Patterns: Strategy, Observer, Factory, Decorator, Singleton",
-    "SOLID Principles: Single Responsibility, Open/Closed, Liskov, Interface Segregation, Dependency Inversion",
+    "SOLID Principles: SRP, Open/Closed, Liskov, ISP, DIP",
     "Data Structures: Arrays, Linked Lists, Trees, Graphs, Hash Tables, Heaps",
-    "Algorithms: Sorting, Searching, Dynamic Programming, Greedy, Divide and Conquer",
-    "System Design: Load Balancers, Caching, Message Queues, Database Sharding",
+    "Algorithms: Sorting, Searching, Dynamic Programming, Greedy",
+    "System Design: Load Balancers, Caching, Message Queues, Sharding",
     "Networking: TCP/IP, HTTP/2, WebSockets, DNS, TLS/SSL",
-    "Databases: Indexing, Normalization, ACID, CAP Theorem, Query Optimization",
-    "CI/CD: Pipeline Design, Blue-Green Deployment, Canary Releases, Feature Flags",
-    "Security: OAuth2, JWT, CORS, XSS, CSRF, SQL Injection Prevention",
-    "Cloud: Serverless, Containers, Kubernetes, Service Mesh, Infrastructure as Code",
-    "Testing: Unit, Integration, E2E, Property-Based, Mutation Testing",
-    "Monitoring: Observability, Metrics, Logging, Tracing, Alerting Strategies",
-    "API Design: REST, GraphQL, gRPC, OpenAPI, Versioning, Rate Limiting",
-    "Python Advanced: Metaclasses, Descriptors, Generators, Coroutines, GIL",
-    "Architecture: Microservices, Event-Driven, CQRS, Domain-Driven Design",
+    "Databases: Indexing, Normalization, ACID, CAP Theorem",
+    "CI/CD: Pipeline Design, Blue-Green Deploy, Feature Flags",
+    "Security: OAuth2, JWT, CORS, XSS, CSRF, SQL Injection",
+    "Cloud: Serverless, Containers, Kubernetes, Service Mesh",
+    "Testing: Unit, Integration, E2E, Property-Based, Mutation",
+    "Monitoring: Observability, Metrics, Logging, Tracing",
+    "API Design: REST, GraphQL, gRPC, OpenAPI, Rate Limiting",
+    "Python Advanced: Metaclasses, Descriptors, Generators, GIL",
+    "Architecture: Microservices, Event-Driven, CQRS, DDD",
 ]
 
 
@@ -243,7 +381,9 @@ class ContentGenerator:
                 f"**Date:** {self.today.isoformat()}  \n"
                 f"**Day:** {self.today.strftime('%A')}\n\n---\n\n"
                 "## 🎯 Goals\n\n- Continuous learning and improvement\n- Build and ship\n\n---\n\n"
-                "## ✅ Completed Tasks\n\n- Daily streak maintained\n- Knowledge base updated\n\n---\n\n"
+                "## ✅ Completed Tasks\n\n"
+                "- Daily streak maintained\n"
+                "- Knowledge base updated\n\n---\n\n"
                 "## 📖 Study Notes\n\n- See today's learning entries\n\n---\n\n"
                 "## 💻 Coding Notes\n\n- See today's code snippets\n\n---\n\n"
                 "## 🐛 Bugs Fixed\n\n- N/A\n\n---\n\n"
@@ -416,8 +556,9 @@ def get_time_slot_actions(hour: int) -> list[str]:
 
 if __name__ == "__main__":
     import sys
+
     gen = ContentGenerator()
-    hour = datetime.utcnow().hour if len(sys.argv) < 2 else int(sys.argv[1])
+    hour = datetime.now(UTC).hour if len(sys.argv) < 2 else int(sys.argv[1])
     actions = get_time_slot_actions(hour)
     method_map = {
         "daily_log": gen.create_daily_log,

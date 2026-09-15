@@ -9,7 +9,6 @@ from __future__ import annotations
 import logging
 from functools import lru_cache
 from pathlib import Path
-from typing import Optional
 
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -110,7 +109,7 @@ class Settings(BaseSettings):
 
 
 @lru_cache(maxsize=1)
-def get_settings(project_root: Optional[str] = None) -> Settings:
+def get_settings(project_root: str | None = None) -> Settings:
     """Return a cached singleton Settings instance.
 
     Args:
